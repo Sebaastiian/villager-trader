@@ -14,4 +14,7 @@ public class ModItems {
     private static Item.Properties defaultProps() {
         return new Item.Properties().tab(ModSetup.ITEM_GROUP);
     }
+
+    static void register() {
+    }
 }

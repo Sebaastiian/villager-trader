@@ -13,6 +13,8 @@ public class Registration {
 
     public static void register(IEventBus modEventBus) {
         ITEMS.register(modEventBus);
+
+        ModItems.register();
     }
 
 }

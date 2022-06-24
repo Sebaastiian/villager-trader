@@ -1,8 +1,8 @@
 package me.sebaastiian.villagertrader.datagen;
 
 import me.sebaastiian.villagertrader.common.VillagerTrader;
-import me.sebaastiian.villagertrader.common.setup.ClientSetup;
-import me.sebaastiian.villagertrader.common.setup.ModItems;
+import me.sebaastiian.villagertrader.setup.ClientSetup;
+import me.sebaastiian.villagertrader.setup.ModItems;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;

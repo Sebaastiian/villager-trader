@@ -1,7 +1,7 @@
 package me.sebaastiian.villagertrader.common;
 
 import com.mojang.logging.LogUtils;
-import me.sebaastiian.villagertrader.common.setup.Registration;
+import me.sebaastiian.villagertrader.setup.Registration;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;

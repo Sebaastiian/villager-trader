@@ -1,14 +1,12 @@
-package me.sebaastiian.villagertrader.common.setup;
+package me.sebaastiian.villagertrader.setup;
 
 import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.RegistryObject;
 
-import static me.sebaastiian.villagertrader.common.setup.Registration.ITEMS;
-
 public class ModItems {
 
-    public static final RegistryObject<Item> VILLAGER_ORB = ITEMS.register("villager_orb",
+    public static final RegistryObject<Item> VILLAGER_ORB = Registration.ITEMS.register("villager_orb",
             () -> new VillagerOrbItem(defaultProps()));
 
     private static Item.Properties defaultProps() {

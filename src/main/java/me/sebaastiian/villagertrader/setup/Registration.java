@@ -1,4 +1,4 @@
-package me.sebaastiian.villagertrader.common.setup;
+package me.sebaastiian.villagertrader.setup;
 
 import me.sebaastiian.villagertrader.common.VillagerTrader;
 import net.minecraft.world.item.Item;

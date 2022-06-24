@@ -1,0 +1,6 @@
+{
+  "parent": "villagertrader:item/villager_orb",
+  "textures": {
+    "layer0": "villagertrader:item/villager_orb_full"
+  }
+}

@@ -1,10 +1,13 @@
 package me.sebaastiian.villagertrader.setup;
 
+import me.sebaastiian.villagertrader.client.util.ClientTradesTooltip;
+import me.sebaastiian.villagertrader.client.util.TradesTooltip;
 import me.sebaastiian.villagertrader.common.VillagerTrader;
 import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -17,6 +20,8 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void clientSetup(final FMLClientSetupEvent event) {
+        MinecraftForgeClient.registerTooltipComponentFactory(TradesTooltip.class, ClientTradesTooltip::new);
+
         event.enqueueWork(() -> {
             ItemProperties.register(ModItems.VILLAGER_ORB.get(), PREDICATE_VILLAGER_ORB,
                     (stack, level, entity, seed) -> VillagerOrbItem.containsVillager(stack) ? 1 : 0);

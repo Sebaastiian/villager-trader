@@ -16,5 +16,8 @@ public class ModLanguageProvider extends LanguageProvider {
     protected void addTranslations() {
         add("itemGroup." + TAB_NAME, "Villager Trader");
         add(ModItems.VILLAGER_ORB.get(), "Villager Orb");
+
+        add(ModItems.VILLAGER_ORB.get().getDescriptionId() + ".tooltip_filled", "Contains %s");
+        add(ModItems.VILLAGER_ORB.get().getDescriptionId() + ".tooltip_empty", "Empty");
     }
 }

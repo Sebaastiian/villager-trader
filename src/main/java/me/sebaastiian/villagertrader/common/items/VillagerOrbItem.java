@@ -3,8 +3,11 @@ package me.sebaastiian.villagertrader.common.items;
 import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.client.util.TradesTooltip;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -17,6 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -149,4 +153,17 @@ public class VillagerOrbItem extends Item {
         return super.getTooltipImage(stack);
     }
 
+    @Override
+    public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> items) {
+        super.fillItemCategory(category, items);
+
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Villager villager = EntityType.VILLAGER.create(level);
+
+        ItemStack stack = new ItemStack(this);
+        stack.getOrCreateTag().put(COMPOUND_DATA, villager.serializeNBT());
+        items.add(stack);
+    }
 }

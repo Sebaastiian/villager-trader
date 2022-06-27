@@ -26,7 +26,7 @@ public class ModItemModels extends ItemModelProvider {
 
         villagerOrbModel.override()
                 .predicate(ClientSetup.PREDICATE_VILLAGER_ORB, 1F)
-                .model(villagerOrbFullModel);
+                .model(villagerOrbFullModel).end();
 
     }
 

@@ -2,6 +2,7 @@ package me.sebaastiian.villagertrader.datagen;
 
 import me.sebaastiian.villagertrader.common.VillagerTrader;
 import me.sebaastiian.villagertrader.setup.ClientSetup;
+import me.sebaastiian.villagertrader.setup.ModBlocks;
 import me.sebaastiian.villagertrader.setup.ModItems;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.item.Item;
@@ -27,6 +28,10 @@ public class ModItemModels extends ItemModelProvider {
         villagerOrbModel.override()
                 .predicate(ClientSetup.PREDICATE_VILLAGER_ORB, 1F)
                 .model(villagerOrbFullModel).end();
+
+
+        withExistingParent(ModBlocks.VILLAGER_TRADING_STATION.get().getRegistryName().getPath(),
+                modLoc("block/villager_trading_station"));
 
     }
 

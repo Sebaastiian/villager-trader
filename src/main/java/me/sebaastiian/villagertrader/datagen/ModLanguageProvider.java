@@ -1,6 +1,7 @@
 package me.sebaastiian.villagertrader.datagen;
 
 import me.sebaastiian.villagertrader.common.VillagerTrader;
+import me.sebaastiian.villagertrader.setup.ModBlocks;
 import me.sebaastiian.villagertrader.setup.ModItems;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
@@ -19,5 +20,8 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add(ModItems.VILLAGER_ORB.get().getDescriptionId() + ".tooltip_filled", "Contains %s");
         add(ModItems.VILLAGER_ORB.get().getDescriptionId() + ".tooltip_empty", "Empty");
+
+
+        add(ModBlocks.VILLAGER_TRADING_STATION.get(), "Villager Trading Station");
     }
 }

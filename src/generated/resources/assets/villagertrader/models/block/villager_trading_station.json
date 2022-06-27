@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "villagertrader:block/villager_trading_station"
+  }
+}

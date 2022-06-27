@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "villagertrader:block/villager_trading_station"
+    }
+  }
+}

@@ -1,4 +1,5 @@
 {
+  "block.villagertrader.villager_trading_station": "Villager Trading Station",
   "item.villagertrader.villager_orb": "Villager Orb",
   "item.villagertrader.villager_orb.tooltip_empty": "Empty",
   "item.villagertrader.villager_orb.tooltip_filled": "Contains %s",

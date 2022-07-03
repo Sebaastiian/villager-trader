@@ -2,10 +2,15 @@ package me.sebaastiian.villagertrader.setup;
 
 import me.sebaastiian.villagertrader.common.VillagerTrader;
 import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
+import me.sebaastiian.villagertrader.common.network.PacketHandler;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
+@Mod.EventBusSubscriber(modid = VillagerTrader.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModSetup {
 
     public static final String TAB_NAME = VillagerTrader.MODID;
@@ -19,4 +24,10 @@ public class ModSetup {
             return stack;
         }
     };
+
+    @SubscribeEvent
+    public static void commonSetup(final FMLCommonSetupEvent event) {
+        PacketHandler.register();
+    }
+
 }

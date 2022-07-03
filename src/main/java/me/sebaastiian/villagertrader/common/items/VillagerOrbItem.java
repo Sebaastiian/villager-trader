@@ -4,12 +4,14 @@ import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.client.util.TradesTooltip;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -109,10 +111,23 @@ public class VillagerOrbItem extends Item {
         return stack.getOrCreateTag().contains(COMPOUND_DATA);
     }
 
+    public static List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> getOffers(CompoundTag villagerData) {
+        MerchantOffers offers = new MerchantOffers(villagerData.getCompound("Offers"));
+
+        return offers.stream()
+                .map(offer -> new Pair<>(new Pair<>(offer.getCostA(), offer.getCostB()), offer.getResult()))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+        if (!Screen.hasShiftDown()) {
+            MutableComponent holdShiftInfo = new TranslatableComponent(
+                    this.getDescriptionId() + ".hold_shift").withStyle(ChatFormatting.DARK_GRAY);
+            tooltipComponents.add(holdShiftInfo);
+        }
 
         if (containsVillager(stack)) {
             CompoundTag villagerData = stack.getTag().getCompound(COMPOUND_DATA);
@@ -136,18 +151,13 @@ public class VillagerOrbItem extends Item {
 
     @Override
     public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
+        if (!Screen.hasShiftDown()) return super.getTooltipImage(stack);
         if (!containsVillager(stack))
             return super.getTooltipImage(stack);
 
         CompoundTag villagerData = stack.getTag().getCompound(COMPOUND_DATA);
         if (villagerData.contains("Offers", 10)) {
-            MerchantOffers offers = new MerchantOffers(villagerData.getCompound("Offers"));
-
-            List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> collect = offers.stream()
-                    .map(offer -> new Pair<>(new Pair<>(offer.getCostA(), offer.getCostB()), offer.getResult()))
-                    .collect(Collectors.toList());
-
-            return Optional.of(new TradesTooltip(collect));
+            return Optional.of(new TradesTooltip(getOffers(villagerData)));
         }
 
         return super.getTooltipImage(stack);

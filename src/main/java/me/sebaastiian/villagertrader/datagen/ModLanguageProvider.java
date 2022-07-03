@@ -16,8 +16,10 @@ public class ModLanguageProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
         add("itemGroup." + TAB_NAME, "Villager Trader");
+        add("screen.villagertrader.villager_trading_station", "Villager Trading Station");
         add(ModItems.VILLAGER_ORB.get(), "Villager Orb");
 
+        add(ModItems.VILLAGER_ORB.get().getDescriptionId() + ".hold_shift", "Hold Shift for Villager Trades");
         add(ModItems.VILLAGER_ORB.get().getDescriptionId() + ".tooltip_filled", "Contains %s");
         add(ModItems.VILLAGER_ORB.get().getDescriptionId() + ".tooltip_empty", "Empty");
 

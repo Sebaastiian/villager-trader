@@ -1,7 +1,9 @@
 {
   "block.villagertrader.villager_trading_station": "Villager Trading Station",
   "item.villagertrader.villager_orb": "Villager Orb",
+  "item.villagertrader.villager_orb.hold_shift": "Hold Shift for Villager Trades",
   "item.villagertrader.villager_orb.tooltip_empty": "Empty",
   "item.villagertrader.villager_orb.tooltip_filled": "Contains %s",
-  "itemGroup.villagertrader": "Villager Trader"
+  "itemGroup.villagertrader": "Villager Trader",
+  "screen.villagertrader.villager_trading_station": "Villager Trading Station"
 }

@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -80,5 +81,25 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
 
         return (level, blockPos, blockState, blockEntity) -> VillagerTradingStationBlockEntity.serverTick(level,
                 blockPos, blockState, (VillagerTradingStationBlockEntity) blockEntity);
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (newState.getBlock() != this) {
+            BlockEntity tileEntity = level.getBlockEntity(pos);
+            if (tileEntity != null) {
+                LazyOptional<IItemHandler> cap = tileEntity.getCapability(
+                        CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+                
+                cap.ifPresent(handler -> {
+                    for (int i = 0; i < handler.getSlots(); ++i) {
+                        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
+                                handler.getStackInSlot(i));
+                    }
+                });
+            }
+
+        }
+        super.onRemove(state, level, pos, newState, isMoving);
     }
 }

@@ -123,13 +123,12 @@ public class VillagerOrbItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
-        if (!Screen.hasShiftDown()) {
-            MutableComponent holdShiftInfo = new TranslatableComponent(
-                    this.getDescriptionId() + ".hold_shift").withStyle(ChatFormatting.DARK_GRAY);
-            tooltipComponents.add(holdShiftInfo);
-        }
-
         if (containsVillager(stack)) {
+            if (hasOffers(stack.getTag().getCompound(COMPOUND_DATA)) && !Screen.hasShiftDown()) {
+                MutableComponent holdShiftInfo = new TranslatableComponent(
+                        this.getDescriptionId() + ".hold_shift").withStyle(ChatFormatting.DARK_GRAY);
+                tooltipComponents.add(holdShiftInfo);
+            }
             CompoundTag villagerData = stack.getTag().getCompound(COMPOUND_DATA);
             Villager villager = EntityType.VILLAGER.create(level);
             villager.load(villagerData);
@@ -156,11 +155,15 @@ public class VillagerOrbItem extends Item {
             return super.getTooltipImage(stack);
 
         CompoundTag villagerData = stack.getTag().getCompound(COMPOUND_DATA);
-        if (villagerData.contains("Offers", 10)) {
+        if (hasOffers(villagerData)) {
             return Optional.of(new TradesTooltip(getOffers(villagerData)));
         }
 
         return super.getTooltipImage(stack);
+    }
+
+    private boolean hasOffers(CompoundTag villagerData) {
+        return villagerData.contains("Offers", 10);
     }
 
     @Override

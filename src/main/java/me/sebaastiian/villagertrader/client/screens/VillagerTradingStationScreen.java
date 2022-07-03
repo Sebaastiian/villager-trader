@@ -3,8 +3,11 @@ package me.sebaastiian.villagertrader.client.screens;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import me.sebaastiian.villagertrader.client.util.ItemRenderHelper;
 import me.sebaastiian.villagertrader.common.VillagerTrader;
 import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
+import me.sebaastiian.villagertrader.common.network.PacketHandler;
+import me.sebaastiian.villagertrader.common.network.packets.PacketSetSelectedTrade;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -42,12 +45,12 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
 
         for (int l = 0; l < 9; ++l) {
             this.tradeOfferButtons[l] = this.addRenderableWidget(
-                    new VillagerTradingStationScreen.TradeOfferButton(i + 5, k, l, (p_99174_) -> {
-                        if (p_99174_ instanceof VillagerTradingStationScreen.TradeOfferButton) {
-//                            this.shopItem = ((VillagerTradingStationScreen.TradeOfferButton) p_99174_).getIndex() + this.scrollOff;
-//                            this.postButtonClick();
+                    new VillagerTradingStationScreen.TradeOfferButton(i + 5, k, l, (button) -> {
+                        if (button instanceof VillagerTradingStationScreen.TradeOfferButton) {
+                            menu.setSelectedTrade(((TradeOfferButton) button).getIndex());
+                            System.out.println("screen set");
+                            PacketHandler.INSTANCE.sendToServer(new PacketSetSelectedTrade(menu.getSelectedTrade()));
                         }
-
                     }));
             k += 20;
         }
@@ -87,6 +90,15 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
                 this.itemRenderer.blitOffset = 0.0F;
                 k += 20;
             }
+
+            if (menu.getSelectedTrade() >= 0 && menu.getSelectedTrade() < menu.offers.size()) {
+                Pair<Pair<ItemStack, ItemStack>, ItemStack> trade = this.menu.offers.get(menu.getSelectedTrade());
+                Pair<ItemStack, ItemStack> inputs = trade.getFirst();
+                ItemRenderHelper.renderFakeItemTransparent(inputs.getFirst(), leftPos + menu.slots.get(1).x,
+                        topPos + menu.slots.get(1).y, 0.4F);
+                ItemRenderHelper.renderFakeItemTransparent(inputs.getSecond(), leftPos + menu.slots.get(2).x,
+                        topPos + menu.slots.get(2).y, 0.4F);
+            }
         }
 
         for (TradeOfferButton button : this.tradeOfferButtons) {
@@ -122,6 +134,7 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
         public int getIndex() {
             return this.index;
         }
+
 
         @Override
         public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {

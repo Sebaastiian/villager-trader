@@ -16,6 +16,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
@@ -64,6 +65,27 @@ public class VillagerTradingStationContainer extends AbstractContainerMenu {
         for (int k = 0; k < 9; ++k) {
             this.addSlot(new SlotItemHandler(this.playerInventory, k, 108 + k * 18, 143));
         }
+
+        addDataSlot(new DataSlot() {
+            @Override
+            public int get() {
+                return getSelectedTrade();
+            }
+
+            @Override
+            public void set(int value) {
+                setSelectedTrade(value);
+            }
+        });
+    }
+
+    public void setSelectedTrade(int selectedTrade) {
+        System.out.println("container set");
+        blockEntity.setSelectedTrade(selectedTrade);
+    }
+
+    public int getSelectedTrade() {
+        return blockEntity.getSelectedTrade();
     }
 
     @Override

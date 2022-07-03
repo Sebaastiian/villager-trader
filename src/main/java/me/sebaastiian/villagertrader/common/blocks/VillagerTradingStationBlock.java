@@ -43,9 +43,12 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
         BlockEntity blockEntity = level.getBlockEntity(pos);
 
         if (!(blockEntity instanceof VillagerTradingStationBlockEntity)) return InteractionResult.PASS;
+
         LazyOptional<IItemHandler> cap = blockEntity.getCapability(
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+
         cap.ifPresent(h -> {
+            VillagerTradingStationBlockEntity be = (VillagerTradingStationBlockEntity) blockEntity;
             MenuProvider menuProvider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
@@ -55,7 +58,7 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
                 @Nullable
                 @Override
                 public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-                    return new VillagerTradingStationContainer((VillagerTradingStationBlockEntity) blockEntity,
+                    return new VillagerTradingStationContainer(be,
                             containerId, playerInventory, player, (VillagerTradingStationItemHandler) h);
                 }
             };
@@ -90,7 +93,7 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
             if (tileEntity != null) {
                 LazyOptional<IItemHandler> cap = tileEntity.getCapability(
                         CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
-                
+
                 cap.ifPresent(handler -> {
                     for (int i = 0; i < handler.getSlots(); ++i) {
                         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),

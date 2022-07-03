@@ -1,6 +1,7 @@
 package me.sebaastiian.villagertrader.common.network;
 
 import me.sebaastiian.villagertrader.common.VillagerTrader;
+import me.sebaastiian.villagertrader.common.network.packets.PacketSetSelectedTrade;
 import me.sebaastiian.villagertrader.common.network.packets.PacketUpdateMerchantOffers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
@@ -22,6 +23,10 @@ public class PacketHandler {
         INSTANCE.registerMessage(id++, PacketUpdateMerchantOffers.class, PacketUpdateMerchantOffers::encode,
                 PacketUpdateMerchantOffers::decode,
                 PacketUpdateMerchantOffers.Handler::handle);
+
+        INSTANCE.registerMessage(id++, PacketSetSelectedTrade.class, PacketSetSelectedTrade::encode,
+                PacketSetSelectedTrade::decode,
+                PacketSetSelectedTrade.Handler::handle);
 
     }
 }

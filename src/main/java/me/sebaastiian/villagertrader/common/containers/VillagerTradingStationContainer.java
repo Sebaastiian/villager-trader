@@ -7,9 +7,9 @@ import me.sebaastiian.villagertrader.common.handlers.VillagerTradingStationItemH
 import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
 import me.sebaastiian.villagertrader.common.network.PacketHandler;
 import me.sebaastiian.villagertrader.common.network.packets.PacketUpdateMerchantOffers;
+import me.sebaastiian.villagertrader.common.util.VillagerNbt;
 import me.sebaastiian.villagertrader.setup.ModBlocks;
 import me.sebaastiian.villagertrader.setup.ModContainers;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -80,7 +80,6 @@ public class VillagerTradingStationContainer extends AbstractContainerMenu {
     }
 
     public void setSelectedTrade(int selectedTrade) {
-        System.out.println("container set");
         blockEntity.setSelectedTrade(selectedTrade);
     }
 
@@ -144,15 +143,16 @@ public class VillagerTradingStationContainer extends AbstractContainerMenu {
         if (previousItemInFirstSlot != currentItemInFirstSlot) {
             previousItemInFirstSlot = currentItemInFirstSlot;
 
-            if (VillagerOrbItem.containsVillager(currentItemInFirstSlot)) {
-                CompoundTag villagerData = currentItemInFirstSlot.getTag().getCompound(VillagerOrbItem.COMPOUND_DATA);
-                List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> offers = VillagerOrbItem.getOffers(
-                        villagerData);
+            if (VillagerNbt.containsVillager(currentItemInFirstSlot)) {
+                List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> offers = VillagerNbt.tryGetOffers(
+                        currentItemInFirstSlot);
                 PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                         new PacketUpdateMerchantOffers(offers, blockEntity.getBlockPos()));
+                blockEntity.setOffers(offers);
             } else {
                 PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
                         new PacketUpdateMerchantOffers(List.of(), blockEntity.getBlockPos()));
+                blockEntity.setOffers(List.of());
             }
         }
     }

@@ -4,7 +4,7 @@ import me.sebaastiian.villagertrader.client.screens.VillagerTradingStationScreen
 import me.sebaastiian.villagertrader.client.util.ClientTradesTooltip;
 import me.sebaastiian.villagertrader.client.util.TradesTooltip;
 import me.sebaastiian.villagertrader.common.VillagerTrader;
-import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
+import me.sebaastiian.villagertrader.common.util.VillagerNbt;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +31,7 @@ public class ClientSetup {
 
         event.enqueueWork(() -> {
             ItemProperties.register(ModItems.VILLAGER_ORB.get(), PREDICATE_VILLAGER_ORB,
-                    (stack, level, entity, seed) -> VillagerOrbItem.containsVillager(stack) ? 1 : 0);
+                    (stack, level, entity, seed) -> VillagerNbt.containsVillager(stack) ? 1 : 0);
         });
     }
 }

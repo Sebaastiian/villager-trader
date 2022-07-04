@@ -48,7 +48,6 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
                     new VillagerTradingStationScreen.TradeOfferButton(i + 5, k, l, (button) -> {
                         if (button instanceof VillagerTradingStationScreen.TradeOfferButton) {
                             menu.setSelectedTrade(((TradeOfferButton) button).getIndex());
-                            System.out.println("screen set");
                             PacketHandler.INSTANCE.sendToServer(new PacketSetSelectedTrade(menu.getSelectedTrade()));
                         }
                     }));

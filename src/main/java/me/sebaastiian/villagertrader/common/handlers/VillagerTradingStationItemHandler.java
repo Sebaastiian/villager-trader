@@ -2,6 +2,7 @@ package me.sebaastiian.villagertrader.common.handlers;
 
 import me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity;
 import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
+import me.sebaastiian.villagertrader.common.util.VillagerNbt;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -30,7 +31,7 @@ public class VillagerTradingStationItemHandler extends ItemStackHandler {
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         if (slot == 0)
-            return stack.getItem() instanceof VillagerOrbItem && VillagerOrbItem.containsVillager(stack);
+            return stack.getItem() instanceof VillagerOrbItem && VillagerNbt.containsVillager(stack);
         return true;
     }
 

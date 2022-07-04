@@ -1,7 +1,7 @@
 package me.sebaastiian.villagertrader.common.compat;
 
 import me.sebaastiian.villagertrader.common.VillagerTrader;
-import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
+import me.sebaastiian.villagertrader.common.util.VillagerNbt;
 import me.sebaastiian.villagertrader.setup.ModItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -21,7 +21,7 @@ public class JEIPlugin implements IModPlugin {
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.VILLAGER_ORB.get(),
                 (stack, context) -> {
-                    if (VillagerOrbItem.containsVillager(stack)) {
+                    if (VillagerNbt.containsVillager(stack)) {
                         return "has_villager";
                     }
                     return IIngredientSubtypeInterpreter.NONE;

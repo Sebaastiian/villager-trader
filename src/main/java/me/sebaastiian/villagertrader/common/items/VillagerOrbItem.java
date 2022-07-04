@@ -1,7 +1,7 @@
 package me.sebaastiian.villagertrader.common.items;
 
-import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.client.util.TradesTooltip;
+import me.sebaastiian.villagertrader.common.util.VillagerNbt;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -27,17 +27,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class VillagerOrbItem extends Item {
-
-    public static final String COMPOUND_DATA = "villager_data";
 
     public VillagerOrbItem(Properties properties) {
         super(properties.stacksTo(1));
@@ -54,16 +50,16 @@ public class VillagerOrbItem extends Item {
         Direction clickedFace = context.getClickedFace();
         BlockPos clickedPos = context.getClickedPos();
 
-        if (!containsVillager(itemInHand))
+        if (!VillagerNbt.containsVillager(itemInHand))
             return InteractionResult.PASS;
 
         if (level.isClientSide)
             return InteractionResult.SUCCESS;
 
-        CompoundTag villagerData = itemInHand.getTag().getCompound(COMPOUND_DATA);
+        CompoundTag villagerData = itemInHand.getTag().getCompound(VillagerNbt.COMPOUND_DATA);
         villagerData.remove("Pos"); // Don't spawn at the old location
 
-        itemInHand.getTag().remove(COMPOUND_DATA);
+        itemInHand.getTag().remove(VillagerNbt.COMPOUND_DATA);
 
         BlockPos spawnPos = clickedPos.immutable();
         if (!level.getBlockState(spawnPos).getCollisionShape(level, spawnPos).isEmpty())
@@ -95,10 +91,10 @@ public class VillagerOrbItem extends Item {
         if (!(interactionTarget instanceof Villager))
             return InteractionResult.FAIL;
 
-        if (containsVillager(stack))
+        if (VillagerNbt.containsVillager(stack))
             return InteractionResult.FAIL;
 
-        stack.getTag().put(COMPOUND_DATA, interactionTarget.serializeNBT());
+        stack.getTag().put(VillagerNbt.COMPOUND_DATA, interactionTarget.serializeNBT());
         player.setItemInHand(usedHand, stack);
 
         interactionTarget.remove(Entity.RemovalReason.DISCARDED);
@@ -107,29 +103,17 @@ public class VillagerOrbItem extends Item {
         return InteractionResult.SUCCESS;
     }
 
-    public static boolean containsVillager(ItemStack stack) {
-        return stack.getOrCreateTag().contains(COMPOUND_DATA);
-    }
-
-    public static List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> getOffers(CompoundTag villagerData) {
-        MerchantOffers offers = new MerchantOffers(villagerData.getCompound("Offers"));
-
-        return offers.stream()
-                .map(offer -> new Pair<>(new Pair<>(offer.getCostA(), offer.getCostB()), offer.getResult()))
-                .collect(Collectors.toList());
-    }
-
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
-        if (containsVillager(stack)) {
-            if (hasOffers(stack.getTag().getCompound(COMPOUND_DATA)) && !Screen.hasShiftDown()) {
+        if (VillagerNbt.containsVillager(stack)) {
+            if (hasOffers(stack.getTag().getCompound(VillagerNbt.COMPOUND_DATA)) && !Screen.hasShiftDown()) {
                 MutableComponent holdShiftInfo = new TranslatableComponent(
                         this.getDescriptionId() + ".hold_shift").withStyle(ChatFormatting.DARK_GRAY);
                 tooltipComponents.add(holdShiftInfo);
             }
-            CompoundTag villagerData = stack.getTag().getCompound(COMPOUND_DATA);
+            CompoundTag villagerData = stack.getTag().getCompound(VillagerNbt.COMPOUND_DATA);
             Villager villager = EntityType.VILLAGER.create(level);
             villager.load(villagerData);
 
@@ -151,12 +135,12 @@ public class VillagerOrbItem extends Item {
     @Override
     public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
         if (!Screen.hasShiftDown()) return super.getTooltipImage(stack);
-        if (!containsVillager(stack))
+        if (!VillagerNbt.containsVillager(stack))
             return super.getTooltipImage(stack);
 
-        CompoundTag villagerData = stack.getTag().getCompound(COMPOUND_DATA);
+        CompoundTag villagerData = stack.getTag().getCompound(VillagerNbt.COMPOUND_DATA);
         if (hasOffers(villagerData)) {
-            return Optional.of(new TradesTooltip(getOffers(villagerData)));
+            return Optional.of(new TradesTooltip(VillagerNbt.getOffers(villagerData)));
         }
 
         return super.getTooltipImage(stack);
@@ -176,7 +160,7 @@ public class VillagerOrbItem extends Item {
         Villager villager = EntityType.VILLAGER.create(level);
 
         ItemStack stack = new ItemStack(this);
-        stack.getOrCreateTag().put(COMPOUND_DATA, villager.serializeNBT());
+        stack.getOrCreateTag().put(VillagerNbt.COMPOUND_DATA, villager.serializeNBT());
         items.add(stack);
     }
 }

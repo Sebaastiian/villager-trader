@@ -1,11 +1,14 @@
 package me.sebaastiian.villagertrader.common.blockentities;
 
+import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
 import me.sebaastiian.villagertrader.common.handlers.VillagerTradingStationItemHandler;
+import me.sebaastiian.villagertrader.common.util.VillagerNbt;
 import me.sebaastiian.villagertrader.setup.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,6 +18,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class VillagerTradingStationBlockEntity extends BlockEntity {
     public VillagerTradingStationBlockEntity(BlockPos pWorldPosition,
@@ -26,7 +31,11 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
             VillagerTradingStationContainer.SLOTS, this);
     private final LazyOptional<ItemStackHandler> lazyItemHandler = LazyOptional.of(() -> itemHandler);
 
+    private static final int TIME_FOR_TRADE = 100;
+
     private int selectedTrade;
+    private List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> offers;
+    private int progress = -1;
 
     @NotNull
     @Override
@@ -45,15 +54,63 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
 
     public static <T extends BlockEntity> void serverTick(Level level, BlockPos blockPos, BlockState blockState,
                                                           VillagerTradingStationBlockEntity blockEntity) {
+        if (blockEntity.offers.isEmpty()) return;
+        
+        if (blockEntity.progress >= TIME_FOR_TRADE && blockEntity.hasCorrectItemsForTrade()) {
+            blockEntity.progress = 0;
+            blockEntity.makeTrade();
+        }
+        if (blockEntity.hasCorrectItemsForTrade()) {
+            blockEntity.progress++;
+        } else {
+            blockEntity.progress = Math.max(-1, blockEntity.progress - 1);
+        }
+    }
+
+    private void makeTrade() {
+        Pair<Pair<ItemStack, ItemStack>, ItemStack> trade = offers.get(selectedTrade);
+        Pair<ItemStack, ItemStack> inputs = trade.getFirst();
+        ItemStack result = trade.getSecond();
+
+        itemHandler.extractItem(1, inputs.getFirst().getCount(), false);
+        itemHandler.extractItem(2, inputs.getSecond().getCount(), false);
+        itemHandler.insertItem(3, result.copy(), false);
+    }
+
+    private boolean hasCorrectItemsForTrade() {
+        ItemStack stackFirstSlot = itemHandler.getStackInSlot(1);
+        ItemStack stackSecondSlot = itemHandler.getStackInSlot(2);
+
+        Pair<Pair<ItemStack, ItemStack>, ItemStack> trade = offers.get(selectedTrade);
+        Pair<ItemStack, ItemStack> inputs = trade.getFirst();
+        ItemStack result = trade.getSecond();
+
+        if (stackFirstSlot.getItem() != inputs.getFirst().getItem()) return false;
+        if (stackFirstSlot.getCount() < inputs.getFirst().getCount()) return false;
+        if (!canInsertResult(result.copy())) return false;
+
+        if (!inputs.getSecond().isEmpty()) {
+            if (stackSecondSlot.getItem() != inputs.getSecond().getItem()) return false;
+            if (stackSecondSlot.getCount() < inputs.getSecond().getCount()) return false;
+        }
+
+        return true;
+    }
+
+    private boolean canInsertResult(ItemStack result) {
+        return (itemHandler.insertItem(3, result, true).getCount() != result.getCount());
     }
 
     public void setSelectedTrade(int selectedTrade) {
         this.selectedTrade = selectedTrade;
-        System.out.println("set " + this.selectedTrade);
     }
 
     public int getSelectedTrade() {
         return selectedTrade;
+    }
+
+    public void setOffers(List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> offers) {
+        this.offers = offers;
     }
 
     @Override
@@ -61,7 +118,6 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
         super.saveAdditional(pTag);
         pTag.put("inventory", itemHandler.serializeNBT());
         pTag.putInt("selected_trade", selectedTrade);
-        System.out.println("saved " + selectedTrade);
     }
 
     @Override
@@ -69,6 +125,8 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
         super.load(pTag);
         itemHandler.deserializeNBT(pTag.getCompound("inventory"));
         selectedTrade = pTag.getInt("selected_trade");
-        System.out.println("oaded " + selectedTrade);
+        ItemStack stack = itemHandler.getStackInSlot(0);
+        if (!VillagerNbt.containsVillager(stack)) return;
+        offers = VillagerNbt.tryGetOffers(stack);
     }
 }

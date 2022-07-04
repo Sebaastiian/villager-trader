@@ -35,7 +35,6 @@ public class PacketSetSelectedTrade {
 
                 VillagerTradingStationBlockEntity blockEntity = ((VillagerTradingStationContainer) container).blockEntity;
                 blockEntity.setSelectedTrade(msg.selectedTrade);
-                System.out.println("packet " + msg.selectedTrade);
             });
             ctx.get().setPacketHandled(true);
         }

@@ -153,6 +153,7 @@ public class VillagerOrbItem extends Item {
     @Override
     public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> items) {
         super.fillItemCategory(category, items);
+        if (!allowdedIn(category)) return;
 
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;

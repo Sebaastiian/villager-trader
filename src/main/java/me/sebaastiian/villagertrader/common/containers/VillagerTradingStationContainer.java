@@ -77,6 +77,18 @@ public class VillagerTradingStationContainer extends AbstractContainerMenu {
                 setSelectedTrade(value);
             }
         });
+
+        addDataSlot(new DataSlot() {
+            @Override
+            public int get() {
+                return getProgress();
+            }
+
+            @Override
+            public void set(int value) {
+                setProgress(value);
+            }
+        });
     }
 
     public void setSelectedTrade(int selectedTrade) {
@@ -85,6 +97,14 @@ public class VillagerTradingStationContainer extends AbstractContainerMenu {
 
     public int getSelectedTrade() {
         return blockEntity.getSelectedTrade();
+    }
+
+    public void setProgress(int progress) {
+        blockEntity.setProgress(progress);
+    }
+
+    public int getProgress() {
+        return blockEntity.getProgress();
     }
 
     @Override

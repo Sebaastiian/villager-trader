@@ -34,7 +34,7 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
     private static final int TIME_FOR_TRADE = 100;
 
     private int selectedTrade;
-    private List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> offers;
+    private List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> offers = List.of();
     private int progress = -1;
 
     @NotNull
@@ -54,8 +54,15 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
 
     public static <T extends BlockEntity> void serverTick(Level level, BlockPos blockPos, BlockState blockState,
                                                           VillagerTradingStationBlockEntity blockEntity) {
-        if (blockEntity.offers.isEmpty()) return;
-        
+        if (blockEntity.offers.isEmpty()) {
+            blockEntity.progress = -1;
+            return;
+        }
+
+        if (blockEntity.offers.size() <= blockEntity.selectedTrade) {
+            blockEntity.selectedTrade = 0;
+        }
+
         if (blockEntity.progress >= TIME_FOR_TRADE && blockEntity.hasCorrectItemsForTrade()) {
             blockEntity.progress = 0;
             blockEntity.makeTrade();
@@ -111,6 +118,14 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
 
     public void setOffers(List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> offers) {
         this.offers = offers;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
     }
 
     @Override

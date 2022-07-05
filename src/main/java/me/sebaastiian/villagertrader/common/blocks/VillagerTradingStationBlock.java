@@ -42,13 +42,12 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
         if (level.isClientSide) return InteractionResult.SUCCESS;
         BlockEntity blockEntity = level.getBlockEntity(pos);
 
-        if (!(blockEntity instanceof VillagerTradingStationBlockEntity)) return InteractionResult.PASS;
+        if (!(blockEntity instanceof VillagerTradingStationBlockEntity be)) return InteractionResult.PASS;
 
         LazyOptional<IItemHandler> cap = blockEntity.getCapability(
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
 
         cap.ifPresent(h -> {
-            VillagerTradingStationBlockEntity be = (VillagerTradingStationBlockEntity) blockEntity;
             MenuProvider menuProvider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {

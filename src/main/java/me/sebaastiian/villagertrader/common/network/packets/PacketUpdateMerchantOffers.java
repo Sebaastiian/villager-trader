@@ -64,9 +64,9 @@ public class PacketUpdateMerchantOffers {
         if (!(blockEntity instanceof VillagerTradingStationBlockEntity)) return;
 
         LocalPlayer player = Minecraft.getInstance().player;
-        if (!(player.containerMenu instanceof VillagerTradingStationContainer)) return;
+        if (!(player.containerMenu instanceof VillagerTradingStationContainer container)) return;
 
-        ((VillagerTradingStationContainer) player.containerMenu).offers = msg.offers;
+        container.offers = msg.offers;
 
     }
 }

@@ -31,9 +31,9 @@ public class PacketSetSelectedTrade {
                 if (sender == null) return;
 
                 AbstractContainerMenu container = sender.containerMenu;
-                if (!(container instanceof VillagerTradingStationContainer)) return;
+                if (!(container instanceof VillagerTradingStationContainer stationContainer)) return;
 
-                VillagerTradingStationBlockEntity blockEntity = ((VillagerTradingStationContainer) container).blockEntity;
+                VillagerTradingStationBlockEntity blockEntity = (stationContainer).blockEntity;
                 blockEntity.setSelectedTrade(msg.selectedTrade);
             });
             ctx.get().setPacketHandled(true);

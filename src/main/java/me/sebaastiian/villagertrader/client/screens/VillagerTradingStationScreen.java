@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.client.util.ItemRenderHelper;
 import me.sebaastiian.villagertrader.common.VillagerTrader;
+import me.sebaastiian.villagertrader.common.config.VillagerTraderConfig;
 import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
 import me.sebaastiian.villagertrader.common.network.PacketHandler;
 import me.sebaastiian.villagertrader.common.network.packets.PacketSetSelectedTrade;
@@ -122,7 +123,7 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
         this.blit(poseStack, relX, relY, this.getBlitOffset(), 0, 0, this.imageWidth, this.imageHeight, 512, 256);
 
         int progress = menu.getProgress();
-        int interpolated = (int) ((float) progress / 100F * 24F);
+        int interpolated = (int) ((float) progress / VillagerTraderConfig.server.tradingStationTradeTime.get() * 24F);
         this.blit(poseStack, leftPos + 185, topPos + 37, 317, 104, interpolated + 1, 16, 512, 256);
     }
 

@@ -1,6 +1,7 @@
 package me.sebaastiian.villagertrader.common.blockentities;
 
 import com.mojang.datafixers.util.Pair;
+import me.sebaastiian.villagertrader.common.config.VillagerTraderConfig;
 import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
 import me.sebaastiian.villagertrader.common.handlers.VillagerTradingStationItemHandler;
 import me.sebaastiian.villagertrader.common.util.VillagerNbt;
@@ -30,8 +31,6 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
     private final ItemStackHandler itemHandler = new VillagerTradingStationItemHandler(
             VillagerTradingStationContainer.SLOTS, this);
     private final LazyOptional<ItemStackHandler> lazyItemHandler = LazyOptional.of(() -> itemHandler);
-
-    private static final int TIME_FOR_TRADE = 100;
 
     private int selectedTrade;
     private List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> offers = List.of();
@@ -63,14 +62,14 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
             blockEntity.selectedTrade = 0;
         }
 
-        if (blockEntity.progress >= TIME_FOR_TRADE && blockEntity.hasCorrectItemsForTrade()) {
+        if (blockEntity.progress >= VillagerTraderConfig.server.tradingStationTradeTime.get() && blockEntity.hasCorrectItemsForTrade()) {
             blockEntity.progress = 0;
             blockEntity.makeTrade();
         }
         if (blockEntity.hasCorrectItemsForTrade()) {
             blockEntity.progress++;
         } else {
-            blockEntity.progress = Math.max(-1, blockEntity.progress - 1);
+            blockEntity.progress = Math.max(-1, blockEntity.progress - 5);
         }
     }
 

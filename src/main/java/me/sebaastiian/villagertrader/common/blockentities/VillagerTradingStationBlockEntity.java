@@ -3,6 +3,7 @@ package me.sebaastiian.villagertrader.common.blockentities;
 import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.common.config.VillagerTraderConfig;
 import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
+import me.sebaastiian.villagertrader.common.handlers.CustomEnergyStorage;
 import me.sebaastiian.villagertrader.common.handlers.VillagerTradingStationItemHandler;
 import me.sebaastiian.villagertrader.common.util.VillagerNbt;
 import me.sebaastiian.villagertrader.setup.ModBlockEntities;
@@ -15,6 +16,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +35,9 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
             VillagerTradingStationContainer.SLOTS, this);
     private final LazyOptional<ItemStackHandler> lazyItemHandler = LazyOptional.of(() -> itemHandler);
 
+    private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(this, 200_000, 500);
+    private final LazyOptional<IEnergyStorage> lazyEnergyStorage = LazyOptional.of(() -> energyStorage);
+
     private int selectedTrade;
     private List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> offers = List.of();
     private int progress = -1;
@@ -42,6 +48,9 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return lazyItemHandler.cast();
         }
+        if (cap == CapabilityEnergy.ENERGY) {
+            return lazyEnergyStorage.cast();
+        }
         return super.getCapability(cap, side);
     }
 
@@ -49,6 +58,7 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
     public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
+        lazyEnergyStorage.invalidate();
     }
 
     public static <T extends BlockEntity> void serverTick(Level level, BlockPos blockPos, BlockState blockState,
@@ -66,8 +76,9 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
             blockEntity.progress = 0;
             blockEntity.makeTrade();
         }
-        if (blockEntity.hasCorrectItemsForTrade()) {
+        if (blockEntity.hasCorrectItemsForTrade() && blockEntity.energyStorage.consumeEnergy(100, true) >= 0) {
             blockEntity.progress++;
+            blockEntity.energyStorage.consumeEnergy(100, false);
         } else {
             blockEntity.progress = Math.max(-1, blockEntity.progress - 5);
         }
@@ -131,6 +142,7 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
     protected void saveAdditional(CompoundTag pTag) {
         super.saveAdditional(pTag);
         pTag.put("inventory", itemHandler.serializeNBT());
+        pTag.put("energy", energyStorage.serializeNBT());
         pTag.putInt("selected_trade", selectedTrade);
     }
 
@@ -138,7 +150,9 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
     public void load(CompoundTag pTag) {
         super.load(pTag);
         itemHandler.deserializeNBT(pTag.getCompound("inventory"));
+        energyStorage.deserializeNBT(pTag.get("energy"));
         selectedTrade = pTag.getInt("selected_trade");
+
         ItemStack stack = itemHandler.getStackInSlot(0);
         if (!VillagerNbt.containsVillager(stack)) return;
         offers = VillagerNbt.tryGetOffers(stack);

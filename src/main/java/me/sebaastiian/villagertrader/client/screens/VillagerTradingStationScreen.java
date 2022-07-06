@@ -108,6 +108,11 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
             button.visible = button.index < this.menu.offers.size();
         }
 
+        if (mouseX >= leftPos + 275 && mouseX <= leftPos + 292 && mouseY <= topPos + 81 && mouseY >= topPos + 31) {
+            this.renderTooltip(matrixStack, new TextComponent(menu.getEnergy() + " / 200.000 FE"), mouseX, mouseY);
+        }
+
+
         this.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
@@ -122,9 +127,13 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
 
         this.blit(poseStack, relX, relY, this.getBlitOffset(), 0, 0, this.imageWidth, this.imageHeight, 512, 256);
 
+        int energy = menu.getEnergy();
+        int interpolatedEnergy = (int) ((float) energy / 200_000 * 50F);
+        this.blit(poseStack, leftPos + 275, topPos + 31, 0, 205, 18, 50 - interpolatedEnergy, 512, 256);
+
         int progress = menu.getProgress();
-        int interpolated = (int) ((float) progress / VillagerTraderConfig.server.tradingStationTradeTime.get() * 24F);
-        this.blit(poseStack, leftPos + 185, topPos + 37, 317, 104, interpolated + 1, 16, 512, 256);
+        int interpolatedProgress = (int) ((float) progress / VillagerTraderConfig.server.tradingStationTradeTime.get() * 24F);
+        this.blit(poseStack, leftPos + 185, topPos + 37, 317, 104, interpolatedProgress + 1, 16, 512, 256);
     }
 
     class TradeOfferButton extends Button {

@@ -2,6 +2,7 @@ package me.sebaastiian.villagertrader.common.blocks;
 
 import me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity;
 import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
+import me.sebaastiian.villagertrader.common.handlers.CustomEnergyStorage;
 import me.sebaastiian.villagertrader.common.handlers.VillagerTradingStationItemHandler;
 import me.sebaastiian.villagertrader.setup.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -24,6 +25,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
@@ -44,10 +47,11 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
 
         if (!(blockEntity instanceof VillagerTradingStationBlockEntity be)) return InteractionResult.PASS;
 
-        LazyOptional<IItemHandler> cap = blockEntity.getCapability(
+        LazyOptional<IItemHandler> itemCap = blockEntity.getCapability(
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        LazyOptional<IEnergyStorage> energyCap = blockEntity.getCapability(CapabilityEnergy.ENERGY);
 
-        cap.ifPresent(h -> {
+        itemCap.ifPresent(itemHandler -> energyCap.ifPresent(energyStorage -> {
             MenuProvider menuProvider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
@@ -58,14 +62,16 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
                 @Override
                 public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
                     return new VillagerTradingStationContainer(be,
-                            containerId, playerInventory, player, (VillagerTradingStationItemHandler) h);
+                            containerId, playerInventory, player, (VillagerTradingStationItemHandler) itemHandler,
+                            (CustomEnergyStorage) energyStorage);
                 }
             };
 
             NetworkHooks.openGui((ServerPlayer) player, menuProvider, buf -> {
                 buf.writeBlockPos(pos);
+                buf.writeBlockPos(pos);
             });
-        });
+        }));
         return InteractionResult.SUCCESS;
     }
 

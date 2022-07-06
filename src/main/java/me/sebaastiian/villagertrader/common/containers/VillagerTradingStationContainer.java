@@ -2,6 +2,7 @@ package me.sebaastiian.villagertrader.common.containers;
 
 import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity;
+import me.sebaastiian.villagertrader.common.handlers.CustomEnergyStorage;
 import me.sebaastiian.villagertrader.common.handlers.VillagerResultHandlerSlot;
 import me.sebaastiian.villagertrader.common.handlers.VillagerTradingStationItemHandler;
 import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
@@ -37,19 +38,26 @@ public class VillagerTradingStationContainer extends AbstractContainerMenu {
 
     private ItemStack previousItemInFirstSlot = ItemStack.EMPTY;
 
+    private CustomEnergyStorage energyStorage;
+
     public VillagerTradingStationContainer(
             int containerId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this((VillagerTradingStationBlockEntity) player.level.getBlockEntity(extraData.readBlockPos()), containerId,
-                playerInventory, player, new VillagerTradingStationItemHandler(SLOTS));
+                playerInventory, player, new VillagerTradingStationItemHandler(SLOTS),
+                new CustomEnergyStorage(
+                        (VillagerTradingStationBlockEntity) player.level.getBlockEntity(extraData.readBlockPos()),
+                        200_000, 500));
     }
 
     public VillagerTradingStationContainer(VillagerTradingStationBlockEntity blockEntity, int containerId,
                                            Inventory playerInventory, Player player,
-                                           VillagerTradingStationItemHandler handler) {
+                                           VillagerTradingStationItemHandler handler,
+                                           CustomEnergyStorage energyStorage) {
         super(ModContainers.VILLAGER_TRADING_STATION_CONTAINER.get(), containerId);
         this.player = player;
         this.blockEntity = blockEntity;
         this.playerInventory = new InvWrapper(playerInventory);
+        this.energyStorage = energyStorage;
 
         this.addSlot(new SlotItemHandler(handler, 0, 276, 10));
         this.addSlot(new SlotItemHandler(handler, 1, 136, 37));
@@ -65,6 +73,32 @@ public class VillagerTradingStationContainer extends AbstractContainerMenu {
         for (int k = 0; k < 9; ++k) {
             this.addSlot(new SlotItemHandler(this.playerInventory, k, 108 + k * 18, 143));
         }
+
+        addDataSlot(new DataSlot() {
+            @Override
+            public int get() {
+                return getEnergy() & 0xffff;
+            }
+
+            @Override
+            public void set(int value) {
+                int energyStored = getEnergy() & 0xffff0000;
+                energyStorage.setEnergy(energyStored + (value & 0xffff));
+            }
+        });
+
+        addDataSlot(new DataSlot() {
+            @Override
+            public int get() {
+                return (getEnergy() >> 16) & 0xffff;
+            }
+
+            @Override
+            public void set(int value) {
+                int energyStored = getEnergy() & 0x0000ffff;
+                energyStorage.setEnergy(energyStored | (value << 16));
+            }
+        });
 
         addDataSlot(new DataSlot() {
             @Override
@@ -89,6 +123,10 @@ public class VillagerTradingStationContainer extends AbstractContainerMenu {
                 setProgress(value);
             }
         });
+    }
+
+    public int getEnergy() {
+        return energyStorage.getEnergyStored();
     }
 
     public void setSelectedTrade(int selectedTrade) {

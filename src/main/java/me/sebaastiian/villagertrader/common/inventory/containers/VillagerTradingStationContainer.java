@@ -2,6 +2,7 @@ package me.sebaastiian.villagertrader.common.inventory.containers;
 
 import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity;
+import me.sebaastiian.villagertrader.common.config.ModConfig;
 import me.sebaastiian.villagertrader.common.energy.CustomEnergyStorage;
 import me.sebaastiian.villagertrader.common.inventory.CustomItemHandler;
 import me.sebaastiian.villagertrader.common.inventory.containers.slot.VillagerResultHandlerSlot;
@@ -49,7 +50,8 @@ public class VillagerTradingStationContainer extends AbstractContainerMenu {
             int containerId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this((VillagerTradingStationBlockEntity) player.level.getBlockEntity(extraData.readBlockPos()), containerId,
                 playerInventory, player, new CustomItemHandler<>(SLOTS),
-                new CustomEnergyStorage(200_000, 500));
+                new CustomEnergyStorage(ModConfig.server.tradingStationEnergyCapacity.get(),
+                        ModConfig.server.tradingStationMaxTransfer.get()));
     }
 
     public VillagerTradingStationContainer(VillagerTradingStationBlockEntity blockEntity, int containerId,

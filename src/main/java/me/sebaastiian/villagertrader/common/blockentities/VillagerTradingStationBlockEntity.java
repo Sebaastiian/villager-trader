@@ -1,7 +1,7 @@
 package me.sebaastiian.villagertrader.common.blockentities;
 
 import com.mojang.datafixers.util.Pair;
-import me.sebaastiian.villagertrader.common.config.VillagerTraderConfig;
+import me.sebaastiian.villagertrader.common.config.ModConfig;
 import me.sebaastiian.villagertrader.common.energy.CustomEnergyStorage;
 import me.sebaastiian.villagertrader.common.inventory.CustomItemHandler;
 import me.sebaastiian.villagertrader.common.inventory.CustomItemHandlerWrapper;
@@ -56,7 +56,9 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
     private final LazyOptional<IItemHandlerModifiable> privateItemHandler = LazyOptional.of(
             () -> new CombinedInvWrapper(orbHandler, inputHandler, outputHandler));
 
-    private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(this, 200_000, 500);
+    private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(this,
+            ModConfig.server.tradingStationEnergyCapacity.get(),
+            ModConfig.server.tradingStationMaxTransfer.get());
     private final LazyOptional<IEnergyStorage> lazyEnergyStorage = LazyOptional.of(() -> energyStorage);
 
     private int selectedTrade;
@@ -97,13 +99,16 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
             blockEntity.selectedTrade = 0;
         }
 
-        if (blockEntity.progress >= VillagerTraderConfig.server.tradingStationTradeTime.get() && blockEntity.hasCorrectItemsForTrade()) {
+        if (blockEntity.progress >= ModConfig.server.tradingStationTradeTime.get() && blockEntity.hasCorrectItemsForTrade()) {
             blockEntity.progress = 0;
             blockEntity.makeTrade();
         }
-        if (blockEntity.hasCorrectItemsForTrade() && blockEntity.energyStorage.consumeEnergy(100, true) >= 0) {
+
+        Integer energyPerTick = ModConfig.server.tradingStationEnergyPerTick.get();
+        if (blockEntity.hasCorrectItemsForTrade() && blockEntity.energyStorage.consumeEnergy(
+                energyPerTick, true) >= 0) {
             blockEntity.progress++;
-            blockEntity.energyStorage.consumeEnergy(100, false);
+            blockEntity.energyStorage.consumeEnergy(energyPerTick, false);
         } else {
             blockEntity.progress = Math.max(-1, blockEntity.progress - 5);
         }

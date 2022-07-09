@@ -2,9 +2,9 @@ package me.sebaastiian.villagertrader.common.blockentities;
 
 import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.common.config.VillagerTraderConfig;
-import me.sebaastiian.villagertrader.common.handlers.CustomEnergyStorage;
-import me.sebaastiian.villagertrader.common.handlers.CustomItemHandler;
-import me.sebaastiian.villagertrader.common.handlers.CustomItemHandlerWrapper;
+import me.sebaastiian.villagertrader.common.energy.CustomEnergyStorage;
+import me.sebaastiian.villagertrader.common.inventory.CustomItemHandler;
+import me.sebaastiian.villagertrader.common.inventory.CustomItemHandlerWrapper;
 import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
 import me.sebaastiian.villagertrader.common.util.VillagerNbt;
 import me.sebaastiian.villagertrader.setup.ModBlockEntities;

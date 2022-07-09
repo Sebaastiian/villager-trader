@@ -6,7 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.client.util.ItemRenderHelper;
 import me.sebaastiian.villagertrader.common.VillagerTrader;
 import me.sebaastiian.villagertrader.common.config.VillagerTraderConfig;
-import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
+import me.sebaastiian.villagertrader.common.inventory.containers.VillagerTradingStationContainer;
 import me.sebaastiian.villagertrader.common.network.PacketHandler;
 import me.sebaastiian.villagertrader.common.network.packets.PacketSetSelectedTrade;
 import net.minecraft.client.gui.components.Button;
@@ -17,6 +17,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class VillagerTradingStationScreen extends AbstractContainerScreen<VillagerTradingStationContainer> {
 
@@ -57,7 +58,7 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
@@ -117,7 +118,7 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
     }
 
     @Override
-    protected void renderBg(PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TEXTURE_LOCATION);
@@ -125,15 +126,15 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
         int relX = (this.width - this.imageWidth) / 2;
         int relY = (this.height - this.imageHeight) / 2;
 
-        this.blit(poseStack, relX, relY, this.getBlitOffset(), 0, 0, this.imageWidth, this.imageHeight, 512, 256);
+        blit(poseStack, relX, relY, this.getBlitOffset(), 0, 0, this.imageWidth, this.imageHeight, 512, 256);
 
         int energy = menu.getEnergy();
         int interpolatedEnergy = (int) ((float) energy / 200_000 * 50F);
-        this.blit(poseStack, leftPos + 275, topPos + 31, 0, 205, 18, 50 - interpolatedEnergy, 512, 256);
+        blit(poseStack, leftPos + 275, topPos + 31, 0, 205, 18, 50 - interpolatedEnergy, 512, 256);
 
         int progress = menu.getProgress();
         int interpolatedProgress = (int) ((float) progress / VillagerTraderConfig.server.tradingStationTradeTime.get() * 24F);
-        this.blit(poseStack, leftPos + 185, topPos + 37, 317, 104, interpolatedProgress + 1, 16, 512, 256);
+        blit(poseStack, leftPos + 185, topPos + 37, 317, 104, interpolatedProgress + 1, 16, 512, 256);
     }
 
     class TradeOfferButton extends Button {
@@ -152,7 +153,7 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
 
 
         @Override
-        public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {
+        public void renderToolTip(@NotNull PoseStack pPoseStack, int pMouseX, int pMouseY) {
             Pair<ItemStack, ItemStack> inputs = VillagerTradingStationScreen.this.menu.offers
                     .get(this.index)
                     .getFirst();

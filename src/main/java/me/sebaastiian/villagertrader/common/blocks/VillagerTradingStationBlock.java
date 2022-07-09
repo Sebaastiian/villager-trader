@@ -1,8 +1,8 @@
 package me.sebaastiian.villagertrader.common.blocks;
 
 import me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity;
-import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
-import me.sebaastiian.villagertrader.common.handlers.CustomEnergyStorage;
+import me.sebaastiian.villagertrader.common.energy.CustomEnergyStorage;
+import me.sebaastiian.villagertrader.common.inventory.containers.VillagerTradingStationContainer;
 import me.sebaastiian.villagertrader.setup.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;

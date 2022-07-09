@@ -2,7 +2,7 @@ package me.sebaastiian.villagertrader.common.network.packets;
 
 import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity;
-import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
+import me.sebaastiian.villagertrader.common.inventory.containers.VillagerTradingStationContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 public class PacketUpdateMerchantOffers {
 
     private final List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> offers;
-    private BlockPos pos;
+    private final BlockPos pos;
 
     public PacketUpdateMerchantOffers(
             List<Pair<Pair<ItemStack, ItemStack>, ItemStack>> offers, BlockPos pos) {

@@ -1,4 +1,4 @@
-package me.sebaastiian.villagertrader.common.handlers;
+package me.sebaastiian.villagertrader.common.energy;
 
 import me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity;
 import net.minecraftforge.energy.EnergyStorage;

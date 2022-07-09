@@ -1,6 +1,6 @@
 package me.sebaastiian.villagertrader.setup;
 
-import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
+import me.sebaastiian.villagertrader.common.inventory.containers.VillagerTradingStationContainer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.registries.RegistryObject;

@@ -1,10 +1,10 @@
-package me.sebaastiian.villagertrader.common.containers;
+package me.sebaastiian.villagertrader.common.inventory.containers;
 
 import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity;
-import me.sebaastiian.villagertrader.common.handlers.CustomEnergyStorage;
-import me.sebaastiian.villagertrader.common.handlers.CustomItemHandler;
-import me.sebaastiian.villagertrader.common.handlers.VillagerResultHandlerSlot;
+import me.sebaastiian.villagertrader.common.energy.CustomEnergyStorage;
+import me.sebaastiian.villagertrader.common.inventory.CustomItemHandler;
+import me.sebaastiian.villagertrader.common.inventory.containers.slot.VillagerResultHandlerSlot;
 import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
 import me.sebaastiian.villagertrader.common.network.PacketHandler;
 import me.sebaastiian.villagertrader.common.network.packets.PacketUpdateMerchantOffers;

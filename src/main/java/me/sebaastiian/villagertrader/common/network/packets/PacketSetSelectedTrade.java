@@ -1,7 +1,7 @@
 package me.sebaastiian.villagertrader.common.network.packets;
 
 import me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity;
-import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
+import me.sebaastiian.villagertrader.common.inventory.containers.VillagerTradingStationContainer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;

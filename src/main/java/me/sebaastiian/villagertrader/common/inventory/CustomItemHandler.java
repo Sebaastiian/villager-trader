@@ -1,4 +1,4 @@
-package me.sebaastiian.villagertrader.common.handlers;
+package me.sebaastiian.villagertrader.common.inventory;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;

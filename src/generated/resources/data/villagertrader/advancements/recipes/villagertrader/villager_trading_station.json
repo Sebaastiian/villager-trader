@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "villagertrader:villager_trading_station"
+    ]
+  },
+  "criteria": {
+    "has_villager_orb": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "villagertrader:villager_orb"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "villagertrader:villager_trading_station"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_villager_orb",
+      "has_the_recipe"
+    ]
+  ]
+}

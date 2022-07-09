@@ -2,9 +2,10 @@ package me.sebaastiian.villagertrader.common.blockentities;
 
 import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.common.config.VillagerTraderConfig;
-import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
 import me.sebaastiian.villagertrader.common.handlers.CustomEnergyStorage;
-import me.sebaastiian.villagertrader.common.handlers.VillagerTradingStationItemHandler;
+import me.sebaastiian.villagertrader.common.handlers.CustomItemHandler;
+import me.sebaastiian.villagertrader.common.handlers.CustomItemHandlerWrapper;
+import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
 import me.sebaastiian.villagertrader.common.util.VillagerNbt;
 import me.sebaastiian.villagertrader.setup.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -19,7 +20,8 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,9 +33,28 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
         super(ModBlockEntities.VILLAGER_TRADING_STATION_BE.get(), pWorldPosition, pBlockState);
     }
 
-    private final ItemStackHandler itemHandler = new VillagerTradingStationItemHandler(
-            VillagerTradingStationContainer.SLOTS, this);
-    private final LazyOptional<ItemStackHandler> lazyItemHandler = LazyOptional.of(() -> itemHandler);
+    public static final int ORB_SLOTS = 1;
+    public static final int INPUT_SLOTS = 2;
+    public static final int OUTPUT_SLOTS = 1;
+
+
+    private final CustomItemHandler<VillagerTradingStationBlockEntity> orbHandler = new CustomItemHandler<>(
+            ORB_SLOTS, this).setInputFilter((stack, slot) -> stack.getItem() instanceof VillagerOrbItem);
+    private final IItemHandlerModifiable publicOrbHandler = new CustomItemHandlerWrapper(orbHandler).setOutputFilter(
+            ((itemStack, slot) -> false));
+    private final CustomItemHandler<VillagerTradingStationBlockEntity> inputHandler = new CustomItemHandler<>(
+            INPUT_SLOTS, this);
+    private final IItemHandlerModifiable publicInputHandler = new CustomItemHandlerWrapper(
+            inputHandler).setOutputFilter((stack, slot) -> false);
+    private final CustomItemHandler<VillagerTradingStationBlockEntity> outputHandler = new CustomItemHandler<>(
+            OUTPUT_SLOTS, this);
+    private final IItemHandlerModifiable publicOutputHandler = new CustomItemHandlerWrapper(
+            outputHandler).setInputFilter((stack, slot) -> false);
+
+    private final LazyOptional<IItemHandlerModifiable> publicItemHandler = LazyOptional.of(
+            () -> new CombinedInvWrapper(publicOrbHandler, publicInputHandler, publicOutputHandler));
+    private final LazyOptional<IItemHandlerModifiable> privateItemHandler = LazyOptional.of(
+            () -> new CombinedInvWrapper(orbHandler, inputHandler, outputHandler));
 
     private final CustomEnergyStorage energyStorage = new CustomEnergyStorage(this, 200_000, 500);
     private final LazyOptional<IEnergyStorage> lazyEnergyStorage = LazyOptional.of(() -> energyStorage);
@@ -46,7 +67,10 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return lazyItemHandler.cast();
+            if (side == null) {
+                return privateItemHandler.cast();
+            }
+            return publicItemHandler.cast();
         }
         if (cap == CapabilityEnergy.ENERGY) {
             return lazyEnergyStorage.cast();
@@ -57,7 +81,8 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
     @Override
     public void invalidateCaps() {
         super.invalidateCaps();
-        lazyItemHandler.invalidate();
+        publicItemHandler.invalidate();
+        privateItemHandler.invalidate();
         lazyEnergyStorage.invalidate();
     }
 
@@ -89,14 +114,14 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
         Pair<ItemStack, ItemStack> inputs = trade.getFirst();
         ItemStack result = trade.getSecond();
 
-        itemHandler.extractItem(1, inputs.getFirst().getCount(), false);
-        itemHandler.extractItem(2, inputs.getSecond().getCount(), false);
-        itemHandler.insertItem(3, result.copy(), false);
+        inputHandler.extractItem(0, inputs.getFirst().getCount(), false);
+        inputHandler.extractItem(1, inputs.getSecond().getCount(), false);
+        outputHandler.insertItem(0, result.copy(), false);
     }
 
     private boolean hasCorrectItemsForTrade() {
-        ItemStack stackFirstSlot = itemHandler.getStackInSlot(1);
-        ItemStack stackSecondSlot = itemHandler.getStackInSlot(2);
+        ItemStack stackFirstSlot = inputHandler.getStackInSlot(0);
+        ItemStack stackSecondSlot = inputHandler.getStackInSlot(1);
 
         Pair<Pair<ItemStack, ItemStack>, ItemStack> trade = offers.get(selectedTrade);
         Pair<ItemStack, ItemStack> inputs = trade.getFirst();
@@ -108,14 +133,14 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
 
         if (!inputs.getSecond().isEmpty()) {
             if (stackSecondSlot.getItem() != inputs.getSecond().getItem()) return false;
-            if (stackSecondSlot.getCount() < inputs.getSecond().getCount()) return false;
+            return stackSecondSlot.getCount() >= inputs.getSecond().getCount();
         }
 
         return true;
     }
 
     private boolean canInsertResult(ItemStack result) {
-        return (itemHandler.insertItem(3, result, true).getCount() != result.getCount());
+        return (outputHandler.insertItem(0, result, true).getCount() != result.getCount());
     }
 
     public void setSelectedTrade(int selectedTrade) {
@@ -139,21 +164,27 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag) {
+    protected void saveAdditional(@NotNull CompoundTag pTag) {
         super.saveAdditional(pTag);
-        pTag.put("inventory", itemHandler.serializeNBT());
+        pTag.put("inventory_orb", orbHandler.serializeNBT());
+        pTag.put("inventory_input", inputHandler.serializeNBT());
+        pTag.put("inventory_output", outputHandler.serializeNBT());
         pTag.put("energy", energyStorage.serializeNBT());
         pTag.putInt("selected_trade", selectedTrade);
+        pTag.putInt("progress", progress);
     }
 
     @Override
-    public void load(CompoundTag pTag) {
+    public void load(@NotNull CompoundTag pTag) {
         super.load(pTag);
-        itemHandler.deserializeNBT(pTag.getCompound("inventory"));
+        orbHandler.deserializeNBT(pTag.getCompound("inventory_orb"));
+        inputHandler.deserializeNBT(pTag.getCompound("inventory_input"));
+        outputHandler.deserializeNBT(pTag.getCompound("inventory_output"));
         energyStorage.deserializeNBT(pTag.get("energy"));
         selectedTrade = pTag.getInt("selected_trade");
+        progress = pTag.getInt("progress");
 
-        ItemStack stack = itemHandler.getStackInSlot(0);
+        ItemStack stack = orbHandler.getStackInSlot(0);
         if (!VillagerNbt.containsVillager(stack)) return;
         offers = VillagerNbt.tryGetOffers(stack);
     }

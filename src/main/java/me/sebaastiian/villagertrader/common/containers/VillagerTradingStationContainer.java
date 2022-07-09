@@ -3,8 +3,8 @@ package me.sebaastiian.villagertrader.common.containers;
 import com.mojang.datafixers.util.Pair;
 import me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity;
 import me.sebaastiian.villagertrader.common.handlers.CustomEnergyStorage;
+import me.sebaastiian.villagertrader.common.handlers.CustomItemHandler;
 import me.sebaastiian.villagertrader.common.handlers.VillagerResultHandlerSlot;
-import me.sebaastiian.villagertrader.common.handlers.VillagerTradingStationItemHandler;
 import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
 import me.sebaastiian.villagertrader.common.network.PacketHandler;
 import me.sebaastiian.villagertrader.common.network.packets.PacketUpdateMerchantOffers;
@@ -20,16 +20,21 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import static me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity.*;
+
 public class VillagerTradingStationContainer extends AbstractContainerMenu {
 
-    public static int SLOTS = 4;
+    public static int SLOTS = ORB_SLOTS + INPUT_SLOTS + OUTPUT_SLOTS;
     public Player player;
     private IItemHandler playerInventory;
 
@@ -38,25 +43,26 @@ public class VillagerTradingStationContainer extends AbstractContainerMenu {
 
     private ItemStack previousItemInFirstSlot = ItemStack.EMPTY;
 
-    private CustomEnergyStorage energyStorage;
+    private final CustomEnergyStorage energyStorage;
 
     public VillagerTradingStationContainer(
             int containerId, Inventory playerInventory, Player player, FriendlyByteBuf extraData) {
         this((VillagerTradingStationBlockEntity) player.level.getBlockEntity(extraData.readBlockPos()), containerId,
-                playerInventory, player, new VillagerTradingStationItemHandler(SLOTS),
-                new CustomEnergyStorage(
-                        (VillagerTradingStationBlockEntity) player.level.getBlockEntity(extraData.readBlockPos()),
-                        200_000, 500));
+                playerInventory, player, new CustomItemHandler<>(SLOTS),
+                new CustomEnergyStorage(200_000, 500));
     }
 
     public VillagerTradingStationContainer(VillagerTradingStationBlockEntity blockEntity, int containerId,
                                            Inventory playerInventory, Player player,
-                                           VillagerTradingStationItemHandler handler,
+                                           IItemHandler handler,
                                            CustomEnergyStorage energyStorage) {
         super(ModContainers.VILLAGER_TRADING_STATION_CONTAINER.get(), containerId);
         this.player = player;
         this.blockEntity = blockEntity;
-        this.playerInventory = new InvWrapper(playerInventory);
+        LazyOptional<IItemHandler> playerInv = player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY);
+        if (playerInv.isPresent()) {
+            this.playerInventory = playerInv.orElse(new InvWrapper(playerInventory));
+        }
         this.energyStorage = energyStorage;
 
         this.addSlot(new SlotItemHandler(handler, 0, 276, 10));
@@ -146,13 +152,13 @@ public class VillagerTradingStationContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player pPlayer) {
+    public boolean stillValid(@NotNull Player pPlayer) {
         return stillValid(ContainerLevelAccess.create(player.level, blockEntity.getBlockPos()), player,
                 ModBlocks.VILLAGER_TRADING_STATION.get());
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (slot.hasItem()) {

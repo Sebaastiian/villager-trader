@@ -3,7 +3,6 @@ package me.sebaastiian.villagertrader.common.blocks;
 import me.sebaastiian.villagertrader.common.blockentities.VillagerTradingStationBlockEntity;
 import me.sebaastiian.villagertrader.common.containers.VillagerTradingStationContainer;
 import me.sebaastiian.villagertrader.common.handlers.CustomEnergyStorage;
-import me.sebaastiian.villagertrader.common.handlers.VillagerTradingStationItemHandler;
 import me.sebaastiian.villagertrader.setup.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -30,6 +29,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class VillagerTradingStationBlock extends Block implements EntityBlock {
@@ -40,8 +40,9 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
-                                 BlockHitResult hit) {
+    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos,
+                                          @NotNull Player player, @NotNull InteractionHand hand,
+                                          @NotNull BlockHitResult hit) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
         BlockEntity blockEntity = level.getBlockEntity(pos);
 
@@ -54,37 +55,34 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
         itemCap.ifPresent(itemHandler -> energyCap.ifPresent(energyStorage -> {
             MenuProvider menuProvider = new MenuProvider() {
                 @Override
-                public Component getDisplayName() {
+                public @NotNull Component getDisplayName() {
                     return new TranslatableComponent(SCREEN_TRANSLATION_KEY);
                 }
 
-                @Nullable
                 @Override
-                public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+                public AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory,
+                                                        @NotNull Player player) {
                     return new VillagerTradingStationContainer(be,
-                            containerId, playerInventory, player, (VillagerTradingStationItemHandler) itemHandler,
+                            containerId, playerInventory, player, itemHandler,
                             (CustomEnergyStorage) energyStorage);
                 }
             };
 
-            NetworkHooks.openGui((ServerPlayer) player, menuProvider, buf -> {
-                buf.writeBlockPos(pos);
-                buf.writeBlockPos(pos);
-            });
+            NetworkHooks.openGui((ServerPlayer) player, menuProvider, buf -> buf.writeBlockPos(pos));
         }));
         return InteractionResult.SUCCESS;
     }
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new VillagerTradingStationBlockEntity(pos, state);
     }
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState,
-                                                                  BlockEntityType<T> pBlockEntityType) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, @NotNull BlockState pState,
+                                                                  @NotNull BlockEntityType<T> pBlockEntityType) {
         if (pLevel.isClientSide || pBlockEntityType != ModBlockEntities.VILLAGER_TRADING_STATION_BE.get()) return null;
 
         return (level, blockPos, blockState, blockEntity) -> VillagerTradingStationBlockEntity.serverTick(level,
@@ -92,7 +90,8 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState,
+                         boolean isMoving) {
         if (newState.getBlock() != this) {
             BlockEntity tileEntity = level.getBlockEntity(pos);
             if (tileEntity != null) {

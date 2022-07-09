@@ -5,16 +5,28 @@ import net.minecraftforge.energy.EnergyStorage;
 
 public class CustomEnergyStorage extends EnergyStorage {
 
-    protected final VillagerTradingStationBlockEntity blockEntity;
+    protected VillagerTradingStationBlockEntity blockEntity;
+
+    public CustomEnergyStorage(int capacity) {
+        super(capacity);
+    }
 
     public CustomEnergyStorage(VillagerTradingStationBlockEntity be, int capacity) {
         super(capacity);
         blockEntity = be;
     }
 
+    public CustomEnergyStorage(int capacity, int maxTransfer) {
+        super(capacity, maxTransfer);
+    }
+
     public CustomEnergyStorage(VillagerTradingStationBlockEntity be, int capacity, int maxTransfer) {
         super(capacity, maxTransfer);
         blockEntity = be;
+    }
+
+    public CustomEnergyStorage(int capacity, int maxReceive, int maxExtract) {
+        super(capacity, maxReceive, maxExtract);
     }
 
     public CustomEnergyStorage(VillagerTradingStationBlockEntity be, int capacity, int maxReceive, int maxExtract) {
@@ -23,6 +35,7 @@ public class CustomEnergyStorage extends EnergyStorage {
     }
 
     protected void onEnergyChanged() {
+        if (blockEntity == null) return;
         blockEntity.setChanged();
     }
 

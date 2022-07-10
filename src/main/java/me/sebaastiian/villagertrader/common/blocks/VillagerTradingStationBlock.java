@@ -5,6 +5,7 @@ import me.sebaastiian.villagertrader.common.energy.CustomEnergyStorage;
 import me.sebaastiian.villagertrader.common.inventory.containers.VillagerTradingStationContainer;
 import me.sebaastiian.villagertrader.setup.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,6 +16,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -22,6 +24,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -33,10 +38,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class VillagerTradingStationBlock extends Block implements EntityBlock {
+
     public static final String SCREEN_TRANSLATION_KEY = "screen.villagertrader.villager_trading_station";
 
     public VillagerTradingStationBlock(Properties p_49795_) {
         super(p_49795_);
+        registerDefaultState(getStateDefinition().any().setValue(HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
@@ -70,6 +77,7 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
 
             NetworkHooks.openGui((ServerPlayer) player, menuProvider, buf -> buf.writeBlockPos(pos));
         }));
+        
         return InteractionResult.SUCCESS;
     }
 
@@ -108,5 +116,18 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
 
         }
         super.onRemove(state, level, pos, newState, isMoving);
+    }
+
+    public static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(HORIZONTAL_FACING);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return defaultBlockState().setValue(HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
     }
 }

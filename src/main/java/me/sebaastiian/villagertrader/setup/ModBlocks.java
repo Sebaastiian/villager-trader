@@ -10,7 +10,7 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> VILLAGER_TRADING_STATION = Registration.BLOCKS.register(
             "villager_trading_station", () -> new VillagerTradingStationBlock(BlockBehaviour.Properties.of(
-                    Material.METAL).strength(2.0F)));
+                    Material.METAL).strength(2.0F).noOcclusion()));
 
     static void register() {
     }

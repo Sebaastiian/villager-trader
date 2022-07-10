@@ -6,6 +6,8 @@ import me.sebaastiian.villagertrader.common.energy.CustomEnergyStorage;
 import me.sebaastiian.villagertrader.common.inventory.CustomItemHandler;
 import me.sebaastiian.villagertrader.common.inventory.CustomItemHandlerWrapper;
 import me.sebaastiian.villagertrader.common.items.VillagerOrbItem;
+import me.sebaastiian.villagertrader.common.network.PacketHandler;
+import me.sebaastiian.villagertrader.common.network.packets.PacketUpdateOrbHandler;
 import me.sebaastiian.villagertrader.common.util.VillagerNbt;
 import me.sebaastiian.villagertrader.setup.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -22,6 +24,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +42,8 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
 
 
     private final CustomItemHandler<VillagerTradingStationBlockEntity> orbHandler = new CustomItemHandler<>(
-            ORB_SLOTS, this).setInputFilter((stack, slot) -> stack.getItem() instanceof VillagerOrbItem);
+            ORB_SLOTS, this, this::onOrbItemChanged).setInputFilter(
+            (stack, slot) -> stack.getItem() instanceof VillagerOrbItem);
     private final IItemHandlerModifiable publicOrbHandler = new CustomItemHandlerWrapper(orbHandler).setOutputFilter(
             ((itemStack, slot) -> false));
     private final CustomItemHandler<VillagerTradingStationBlockEntity> inputHandler = new CustomItemHandler<>(
@@ -192,5 +196,18 @@ public class VillagerTradingStationBlockEntity extends BlockEntity {
         ItemStack stack = orbHandler.getStackInSlot(0);
         if (!VillagerNbt.containsVillager(stack)) return;
         offers = VillagerNbt.tryGetOffers(stack);
+    }
+
+    private void onOrbItemChanged(VillagerTradingStationBlockEntity blockEntity) {
+        BlockPos pos = getBlockPos();
+        PacketDistributor.TargetPoint targetPoint = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(),
+                pos.getZ(), 10, level.dimension());
+
+        PacketHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> targetPoint),
+                new PacketUpdateOrbHandler(orbHandler.serializeNBT(), pos));
+    }
+
+    public CustomItemHandler<VillagerTradingStationBlockEntity> getOrbHandler() {
+        return orbHandler;
     }
 }

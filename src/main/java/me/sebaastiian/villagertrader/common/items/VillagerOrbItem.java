@@ -12,7 +12,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -28,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -109,7 +109,7 @@ public class VillagerOrbItem extends Item {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
         if (VillagerNbt.containsVillager(stack)) {
             if (hasOffers(stack.getTag().getCompound(VillagerNbt.COMPOUND_DATA)) && !Screen.hasShiftDown()) {
-                MutableComponent holdShiftInfo = new TranslatableComponent(
+                MutableComponent holdShiftInfo = Component.translatable(
                         this.getDescriptionId() + ".hold_shift").withStyle(ChatFormatting.DARK_GRAY);
                 tooltipComponents.add(holdShiftInfo);
             }
@@ -117,17 +117,18 @@ public class VillagerOrbItem extends Item {
             Villager villager = EntityType.VILLAGER.create(level);
             villager.load(villagerData);
 
-            ResourceLocation profName = villager.getVillagerData().getProfession().getRegistryName();
-            TranslatableComponent villagerInfo = new TranslatableComponent(
+            ResourceLocation profName = ForgeRegistries.PROFESSIONS.getKey(villager.getVillagerData().getProfession());
+
+            MutableComponent villagerInfo = Component.translatable(
                     villager.getType().getDescriptionId() + '.' + (!"minecraft".equals(
                             profName.getNamespace()) ? profName.getNamespace() + '.' : "") + profName.getPath());
 
             tooltipComponents.add(
-                    new TranslatableComponent(this.getDescriptionId() + ".tooltip_filled",
+                    Component.translatable(this.getDescriptionId() + ".tooltip_filled",
                             villagerInfo.withStyle(ChatFormatting.GREEN)).withStyle(
                             ChatFormatting.GRAY));
         } else {
-            tooltipComponents.add(new TranslatableComponent(this.getDescriptionId() + ".tooltip_empty").withStyle(
+            tooltipComponents.add(Component.translatable(this.getDescriptionId() + ".tooltip_empty").withStyle(
                     ChatFormatting.GRAY));
         }
     }
@@ -153,7 +154,7 @@ public class VillagerOrbItem extends Item {
     @Override
     public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> items) {
         super.fillItemCategory(category, items);
-        if (!allowdedIn(category)) return;
+        if (!allowedIn(category)) return;
 
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;

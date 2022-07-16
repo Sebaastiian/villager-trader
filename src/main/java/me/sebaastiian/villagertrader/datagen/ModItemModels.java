@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModItemModels extends ItemModelProvider {
@@ -21,7 +22,7 @@ public class ModItemModels extends ItemModelProvider {
         ItemModelBuilder villagerOrbModel = simpleItem(ModItems.VILLAGER_ORB);
 
         ItemModelBuilder villagerOrbFullModel = singleTexture(
-                ModItems.VILLAGER_ORB.get().getRegistryName().getPath() + "_full",
+                ForgeRegistries.ITEMS.getKey(ModItems.VILLAGER_ORB.get()).getPath() + "_full",
                 modLoc("item/villager_orb"),
                 "layer0", modLoc("item/villager_orb_full"));
 
@@ -30,13 +31,13 @@ public class ModItemModels extends ItemModelProvider {
                 .model(villagerOrbFullModel).end();
 
 
-        withExistingParent(ModBlocks.VILLAGER_TRADING_STATION.get().getRegistryName().getPath(),
+        withExistingParent(ForgeRegistries.BLOCKS.getKey(ModBlocks.VILLAGER_TRADING_STATION.get()).getPath(),
                 modLoc("block/villager_trading_station"));
 
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {
-        String path = item.get().getRegistryName().getPath();
+        String path = ForgeRegistries.ITEMS.getKey(item.get()).getPath();
         return singleTexture(path, mcLoc("item/generated"), "layer0",
                 modLoc("item/" + path));
     }

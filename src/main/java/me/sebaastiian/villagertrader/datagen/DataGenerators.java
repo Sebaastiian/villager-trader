@@ -12,17 +12,14 @@ public class DataGenerators {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
-        if (event.includeServer()) {
-            generator.addProvider(new ModRecipes(generator));
-            generator.addProvider(new ModLootTables(generator));
-            generator.addProvider(new ModBlockTags(generator, event.getExistingFileHelper()));
-            //generator.addProvider(new ModItemTags(generator, blockTags, event.getExistingFileHelper()));
-        }
-        if (event.includeClient()) {
-            generator.addProvider(new ModBlockStates(generator, event.getExistingFileHelper()));
-            generator.addProvider(new ModItemModels(generator, event.getExistingFileHelper()));
-            generator.addProvider(new ModLanguageProvider(generator, "en_us"));
-        }
+        generator.addProvider(event.includeServer(), new ModRecipes(generator));
+        generator.addProvider(event.includeServer(), new ModLootTables(generator));
+        generator.addProvider(event.includeServer(), new ModBlockTags(generator, event.getExistingFileHelper()));
+        //generator.addProvider(new ModItemTags(generator, blockTags, event.getExistingFileHelper()));
+
+        generator.addProvider(event.includeClient(), new ModBlockStates(generator, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new ModItemModels(generator, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new ModLanguageProvider(generator, "en_us"));
     }
 
 }

@@ -13,7 +13,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -110,7 +109,7 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
         }
 
         if (mouseX >= leftPos + 275 && mouseX <= leftPos + 292 && mouseY <= topPos + 81 && mouseY >= topPos + 31) {
-            this.renderTooltip(matrixStack, new TextComponent(menu.getEnergy() + " / 200.000 FE"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.literal(menu.getEnergy() + " / 200.000 FE"), mouseX, mouseY);
         }
 
 
@@ -142,7 +141,7 @@ public class VillagerTradingStationScreen extends AbstractContainerScreen<Villag
         final int index;
 
         public TradeOfferButton(int pX, int pY, int index, OnPress pOnPress) {
-            super(pX, pY, 89, 20, TextComponent.EMPTY, pOnPress);
+            super(pX, pY, 89, 20, Component.empty(), pOnPress);
             this.index = index;
             this.visible = false;
         }

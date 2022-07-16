@@ -7,7 +7,6 @@ import me.sebaastiian.villagertrader.setup.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -63,7 +62,7 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
             MenuProvider menuProvider = new MenuProvider() {
                 @Override
                 public @NotNull Component getDisplayName() {
-                    return new TranslatableComponent(SCREEN_TRANSLATION_KEY);
+                    return Component.translatable(SCREEN_TRANSLATION_KEY);
                 }
 
                 @Override
@@ -77,7 +76,7 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
 
             NetworkHooks.openGui((ServerPlayer) player, menuProvider, buf -> buf.writeBlockPos(pos));
         }));
-        
+
         return InteractionResult.SUCCESS;
     }
 

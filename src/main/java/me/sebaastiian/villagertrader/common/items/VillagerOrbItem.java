@@ -107,6 +107,11 @@ public class VillagerOrbItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents,
                                 TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+        if (level == null) {
+            tooltipComponents.add(Component.translatable(this.getDescriptionId() + ".tooltip_empty").withStyle(
+                    ChatFormatting.GRAY));
+            return;
+        }
         if (VillagerNbt.containsVillager(stack)) {
             if (hasOffers(stack.getTag().getCompound(VillagerNbt.COMPOUND_DATA)) && !Screen.hasShiftDown()) {
                 MutableComponent holdShiftInfo = Component.translatable(
@@ -117,7 +122,8 @@ public class VillagerOrbItem extends Item {
             Villager villager = EntityType.VILLAGER.create(level);
             villager.load(villagerData);
 
-            ResourceLocation profName = ForgeRegistries.PROFESSIONS.getKey(villager.getVillagerData().getProfession());
+            ResourceLocation profName = ForgeRegistries.VILLAGER_PROFESSIONS.getKey(
+                    villager.getVillagerData().getProfession());
 
             MutableComponent villagerInfo = Component.translatable(
                     villager.getType().getDescriptionId() + '.' + (!"minecraft".equals(

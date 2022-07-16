@@ -1,19 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "group": "villagertrader",
+  "key": {
+    "e": {
+      "tag": "forge:gems/emerald"
+    },
+    "x": {
+      "tag": "forge:leather"
+    }
+  },
   "pattern": [
     " x ",
     "xex",
     " x "
   ],
-  "key": {
-    "x": {
-      "tag": "forge:leather"
-    },
-    "e": {
-      "tag": "forge:gems/emerald"
-    }
-  },
   "result": {
     "item": "villagertrader:villager_orb"
   }

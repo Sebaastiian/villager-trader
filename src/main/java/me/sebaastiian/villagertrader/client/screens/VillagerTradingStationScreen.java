@@ -18,6 +18,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.client.gui.components.Button.OnPress;
+
 public class VillagerTradingStationScreen extends AbstractContainerScreen<VillagerTradingStationContainer> {
 
     private final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(VillagerTrader.MODID,

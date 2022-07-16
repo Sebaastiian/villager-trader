@@ -1,22 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
   "group": "villagertrader",
-  "pattern": [
-    "ebe",
-    "ene",
-    "ebe"
-  ],
   "key": {
-    "e": {
-      "tag": "forge:gems/emerald"
-    },
     "b": {
       "tag": "forge:storage_blocks/emerald"
+    },
+    "e": {
+      "tag": "forge:gems/emerald"
     },
     "n": {
       "tag": "forge:nether_stars"
     }
   },
+  "pattern": [
+    "ebe",
+    "ene",
+    "ebe"
+  ],
   "result": {
     "item": "villagertrader:villager_trading_station"
   }

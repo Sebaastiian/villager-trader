@@ -8,6 +8,7 @@
     "0": "villagertrader:block/villager_trading_station",
     "particle": "villagertrader:block/villager_trading_station"
   },
+  "render_type": "translucent",
   "elements": [
     {
       "from": [

@@ -36,6 +36,8 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+
 public class VillagerTradingStationBlock extends Block implements EntityBlock {
 
     public static final String SCREEN_TRANSLATION_KEY = "screen.villagertrader.villager_trading_station";
@@ -74,7 +76,7 @@ public class VillagerTradingStationBlock extends Block implements EntityBlock {
                 }
             };
 
-            NetworkHooks.openGui((ServerPlayer) player, menuProvider, buf -> buf.writeBlockPos(pos));
+            NetworkHooks.openScreen((ServerPlayer) player, menuProvider, buf -> buf.writeBlockPos(pos));
         }));
 
         return InteractionResult.SUCCESS;

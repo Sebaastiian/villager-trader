@@ -1,14 +1,14 @@
 {
   "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "villagertrader:item/villager_orb"
-  },
   "overrides": [
     {
+      "model": "villagertrader:item/villager_orb_full",
       "predicate": {
         "villagertrader:contains_villager": 1.0
-      },
-      "model": "villagertrader:item/villager_orb_full"
+      }
     }
-  ]
+  ],
+  "textures": {
+    "layer0": "villagertrader:item/villager_orb"
+  }
 }

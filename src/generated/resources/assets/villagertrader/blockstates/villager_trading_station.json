@@ -1,5 +1,9 @@
 {
   "variants": {
+    "facing=east": {
+      "model": "villagertrader:block/villager_trading_station",
+      "y": 90
+    },
     "facing=north": {
       "model": "villagertrader:block/villager_trading_station"
     },
@@ -10,10 +14,6 @@
     "facing=west": {
       "model": "villagertrader:block/villager_trading_station",
       "y": 270
-    },
-    "facing=east": {
-      "model": "villagertrader:block/villager_trading_station",
-      "y": 90
     }
   }
 }
